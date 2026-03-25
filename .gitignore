@@ -1,17 +1,102 @@
-# API keys
+# ── Secrets & Credentials ─────────────────────────────────────────────────────
 .env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
 *.env
-.linkedin_creds.json
 
-# Generated media
-*.mp4
-*.mp3
-*.wav
-generated/
-output/
-audio/
+# Credential / secret files
+*_creds.json
+*_credentials.json
+*credentials*.json
+*secret*
+*secrets*
+*token*
+*tokens*
 
-# Python
-__pycache__/
-*.pyc
+# Key files
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.cert
+*.crt
+*.cer
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+id_ecdsa
+id_ecdsa.*
+.ssh/
+
+# Auth / session
+*.token
+auth.json
+service-account*.json
+gcloud-credentials.json
+firebase-adminsdk*.json
+*-firebase-adminsdk*.json
+
+# ── OS / Editor ───────────────────────────────────────────────────────────────
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+Desktop.ini
+
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+*.egg
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+*.cover
+
+# ── Node / JS ─────────────────────────────────────────────────────────────────
+node_modules/
+.npm/
+.yarn/
+.pnp.*
+dist/
+build/
+.next/
+.nuxt/
+.svelte-kit/
+out/
+
+# ── Logs & Temp ───────────────────────────────────────────────────────────────
+*.log
+*.tmp
+*.temp
+*.bak
+*.orig
+.cache/
+tmp/
+temp/
