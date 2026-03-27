@@ -76,12 +76,8 @@ Return JSON:
   "hidden_fragility_seed": "one specific structural weakness a naive implementation would have (for internal use only)"
 }}"""
 
-    resp = litellm.completion(
-        model=model,
-        messages=[{"role": "user", "content": prompt}],
-        response_format={"type": "json_object"},
-    )
-    data = json.loads(resp.choices[0].message.content)
+    from ..utils import llm_json
+    data = llm_json(model, [{"role": "user", "content": prompt}])
     data["brief_id"] = str(uuid.uuid4())[:8]
     return data
 
@@ -129,12 +125,8 @@ Return JSON array:
   }}
 ]"""
 
-    resp = litellm.completion(
-        model=model,
-        messages=[{"role": "user", "content": prompt}],
-        response_format={"type": "json_object"},
-    )
-    data = json.loads(resp.choices[0].message.content)
+    from ..utils import llm_json
+    data = llm_json(model, [{"role": "user", "content": prompt}])
     if isinstance(data, list):
         return data
     # Try common wrapper keys
@@ -216,12 +208,16 @@ def generate_system_tasks(n: int = 30, model: str = "gpt-4o") -> list[dict]:
     Returns:
         list of task dicts.
     """
-    tasks = []
-    for i in range(n):
-        domain = DEPLOYMENT_DOMAINS[i % len(DEPLOYMENT_DOMAINS)]
-        task = generate_system_task(domain, model=model)
-        tasks.append(task)
-    return tasks
+    from concurrent.futures import ThreadPoolExecutor
+    indexed = [(i, DEPLOYMENT_DOMAINS[i % len(DEPLOYMENT_DOMAINS)]) for i in range(n)]
+    tasks = [None] * n
+    def _gen(args):
+        i, domain = args
+        return i, generate_system_task(domain, model=model)
+    with ThreadPoolExecutor(max_workers=2) as ex:
+        for i, task in ex.map(_gen, indexed):
+            tasks[i] = task
+    return [t for t in tasks if t is not None]
 
 
 if __name__ == "__main__":

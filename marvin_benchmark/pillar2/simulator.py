@@ -43,12 +43,8 @@ Return JSON array of argument units in order:
   {{"step": 0, "argument_type": "trust_building|reframe_cost|address_resistance|concrete_next_step|other", "summary": "one sentence", "emotional_register": "empathy|curiosity|recognition|momentum|fear|hope|other"}}
 ]"""
 
-    resp = litellm.completion(
-        model=model,
-        messages=[{"role": "user", "content": prompt}],
-        response_format={"type": "json_object"},
-    )
-    data = json.loads(resp.choices[0].message.content)
+    from ..utils import llm_json
+    data = llm_json(model, [{"role": "user", "content": prompt}])
     # LLM may return a list directly or wrap it under a key
     if isinstance(data, list):
         return data

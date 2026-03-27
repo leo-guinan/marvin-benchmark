@@ -36,12 +36,8 @@ Coach's hypothesis: {hypothesis}
 Partial credit is allowed. Score 1.0 if the core issue is named, 0.5 if directionally correct, 0.0 if wrong.
 Return JSON: {{"score": 0.0-1.0, "reasoning": "brief"}}"""
 
-    resp = litellm.completion(
-        model=model,
-        messages=[{"role": "user", "content": prompt}],
-        response_format={"type": "json_object"},
-    )
-    data = json.loads(resp.choices[0].message.content)
+    from ..utils import llm_json
+    data = llm_json(model, [{"role": "user", "content": prompt}])
     return {
         "identified": data["score"] >= 0.5,
         "hypothesis": hypothesis,

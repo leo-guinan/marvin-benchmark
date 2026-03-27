@@ -60,15 +60,8 @@ If the question is off-topic or generic: give a polite but closed response.
 Respond as the client in 2-4 sentences. Do NOT over-reveal. Stay realistic.
 Return JSON: {{"response": "...", "advanced": true/false}}"""
 
-    resp = litellm.completion(
-        model=model,
-        messages=[
-            {"role": "system", "content": system},
-            *conversation_history,
-        ],
-        response_format={"type": "json_object"},
-    )
-    data = json.loads(resp.choices[0].message.content)
+    from ..utils import llm_json
+    data = llm_json(model, [{"role": "system", "content": system}, *conversation_history])
     advanced = data.get("advanced", False)
     new_depth = min(current_depth + 1, max_depth) if advanced else current_depth
     return data["response"], new_depth

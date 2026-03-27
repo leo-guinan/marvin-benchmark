@@ -94,12 +94,8 @@ Return JSON array — one entry per attack step:
   }}
 ]"""
 
-    resp = litellm.completion(
-        model=model,
-        messages=[{"role": "user", "content": prompt}],
-        response_format={"type": "json_object"},
-    )
-    data = json.loads(resp.choices[0].message.content)
+    from ..utils import llm_json
+    data = llm_json(model, [{"role": "user", "content": prompt}])
     if isinstance(data, list):
         return data
     for key in ("analysis", "results", "steps", "evaluations"):

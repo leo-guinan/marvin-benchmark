@@ -88,51 +88,33 @@ def generate_profiles(n: int = 30, model: str = "gpt-4o") -> list[ClientProfile]
     """Generate N diverse client profiles using an LLM."""
     import litellm
 
-    profiles = []
+    jobs = []
     for i, domain in enumerate(DOMAINS * 4):  # 4x through domains = 32, take 30
         if i >= n:
             break
         relationship = BLOCKER_RELATIONSHIPS[i % 3]
 
-        prompt = f"""Generate a realistic coaching client profile.
+        prompt = f"""Coaching client profile. Domain: {domain}. Blocker: {relationship}.
+JSON only, no prose:
+{{"surface_problem":"1 sentence","hidden_blocker":"specific real issue","deflection_patterns":["a","b","c"],"disclosure_sequence":[{{"step":0,"depth":0,"defensive":true,"state_label":"surface","revealed":[]}},{{"step":1,"depth":1,"defensive":true,"state_label":"emotion","revealed":["emotion"]}},{{"step":2,"depth":2,"defensive":false,"state_label":"context","revealed":["emotion","context"]}},{{"step":3,"depth":3,"defensive":false,"state_label":"reveal","revealed":["emotion","context","real issue"]}}],"coaching_question_sequence":["q1","q2","q3"]}}"""
 
-Domain: {domain}
-Blocker relationship: {relationship} (client is {relationship} of their hidden blocker)
+        jobs.append((i, domain, relationship, prompt))
 
-Return JSON only:
-{{
-  "surface_problem": "what the client says out loud (1-2 sentences)",
-  "hidden_blocker": "the real underlying issue (specific, not generic — e.g. not 'fear' but 'fear of specific person's judgment')",
-  "deflection_patterns": [
-    "3-5 things the client says when approached too directly",
-    "these should be realistic deflections for this domain",
-    "e.g. 'I think it's just a time management issue'",
-    "each one redirects away from the hidden blocker"
-  ],
-  "disclosure_sequence": [
-    {{"step": 0, "revealed": [], "depth": 0, "defensive": true, "state_label": "surface only"}},
-    {{"step": 1, "revealed": ["acknowledges frustration"], "depth": 1, "defensive": true, "state_label": "emotional acknowledgment"}},
-    {{"step": 2, "revealed": ["acknowledges frustration", "mentions a person or context"], "depth": 2, "defensive": false, "state_label": "context emerges"}},
-    {{"step": 3, "revealed": ["acknowledges frustration", "mentions person/context", "names real concern"], "depth": 3, "defensive": false, "state_label": "blocker visible"}},
-    {{"step": 4, "revealed": ["full blocker stated"], "depth": 4, "defensive": false, "state_label": "full reveal"}}
-  ],
-  "coaching_question_sequence": [
-    "question that moves client from step 0 to step 1",
-    "question that moves from step 1 to step 2",
-    "question that moves from step 2 to step 3",
-    "question that moves from step 3 to step 4"
-  ]
-}}"""
-
-        resp = litellm.completion(
-            model=model,
-            messages=[{"role": "user", "content": prompt}],
-            response_format={"type": "json_object"},
-        )
-        data = json.loads(resp.choices[0].message.content)
+    def _gen_one(job):
+        i, domain, relationship, prompt = job
+        from ..utils import llm_json
+        data = llm_json(model, [{"role": "user", "content": prompt}])
         data["profile_id"] = str(uuid.uuid4())[:8]
         data["domain"] = domain
         data["blocker_relationship"] = relationship
-        profiles.append(ClientProfile(**data))
+        return ClientProfile(**data)
 
-    return profiles
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    profiles = [None] * len(jobs)
+    with ThreadPoolExecutor(max_workers=2) as ex:
+        futures = {ex.submit(_gen_one, job): job[0] for job in jobs}
+        for fut in as_completed(futures):
+            idx = futures[fut]
+            profiles[idx] = fut.result()
+
+    return [p for p in profiles if p is not None]

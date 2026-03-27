@@ -77,12 +77,8 @@ Return JSON:
   ]
 }}"""
 
-    resp = litellm.completion(
-        model=model,
-        messages=[{"role": "user", "content": prompt}],
-        response_format={"type": "json_object"},
-    )
-    data = json.loads(resp.choices[0].message.content)
+    from ..utils import llm_json
+    data = llm_json(model, [{"role": "user", "content": prompt}])
     data["member_id"] = str(uuid.uuid4())[:8]
     data["prior_energy"] = prior_energy
     return data
@@ -115,10 +111,12 @@ def generate_audience_task(
     # Spread prior_energy evenly across the spectrum [0.1, 0.9]
     energies = [0.1 + (0.8 / max(n_members - 1, 1)) * i for i in range(n_members)]
 
-    audience = [
-        generate_audience_member(action_target, energy, model)
-        for energy in energies
-    ]
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=2) as ex:
+        audience = list(ex.map(
+            lambda e: generate_audience_member(action_target, e, model),
+            energies
+        ))
 
     # Build reference streams: one per member from their transformation_sequence
     reference_streams = [
@@ -186,12 +184,16 @@ def generate_audience_tasks(n: int = 30, members_per_task: int = 5, model: str =
     Returns:
         list of task dicts (serializable to JSON).
     """
-    tasks = []
-    for i in range(n):
-        target = ACTION_TARGETS[i % len(ACTION_TARGETS)]
-        task = generate_audience_task(target, n_members=members_per_task, model=model)
-        tasks.append(task)
-    return tasks
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    indexed = [(i, ACTION_TARGETS[i % len(ACTION_TARGETS)]) for i in range(n)]
+    tasks = [None] * n
+    def _gen(args):
+        i, target = args
+        return i, generate_audience_task(target, n_members=members_per_task, model=model)
+    with ThreadPoolExecutor(max_workers=2) as ex:
+        for i, task in ex.map(_gen, indexed):
+            tasks[i] = task
+    return [t for t in tasks if t is not None]
 
 
 if __name__ == "__main__":
