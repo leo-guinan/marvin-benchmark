@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Polarity Engine — Agent Disagreement Geometry</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'JetBrains Mono', monospace; background: #0a0a0a; color: #e0e0e0; padding: 2em; line-height: 1.6; }
+
+h1 { color: #fff; font-size: 1.5em; margin-bottom: 0.2em; }
+h2 { color: #666; font-size: 0.85em; font-weight: normal; margin-bottom: 2em; }
+h3 { color: #00ff88; font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.15em; margin: 1.5em 0 0.8em; border-bottom: 1px solid #1a1a1a; padding-bottom: 0.4em; }
+
+.thesis {
+  background: #080808; border: 1px solid #1a1a1a; border-radius: 6px;
+  padding: 1.2em 1.5em; margin-bottom: 2em;
+  font-size: 0.85em; color: #888; line-height: 1.8;
+}
+.thesis strong { color: #fff; }
+.thesis .key { color: #F59E0B; font-weight: bold; }
+
+.grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5em; margin-bottom: 2em; }
+.card { background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 6px; padding: 1.2em; }
+.card.unsolved { border-color: #ef444440; background: #150a0a; }
+
+.level-title { color: #fff; font-size: 0.9em; font-weight: bold; margin-bottom: 0.2em; }
+.level-desc { color: #555; font-size: 0.72em; margin-bottom: 0.8em; line-height: 1.4; }
+
+/* Zone map */
+.zone-map { font-size: 0.75em; margin-bottom: 0.6em; }
+.zone-map-label { color: #444; font-size: 0.7em; margin-bottom: 0.2em; }
+.zone-chars { letter-spacing: 1px; font-family: monospace; }
+.zone-agree { color: #00ff88; }
+.zone-w { color: #F59E0B; }
+.zone-rgb { color: #8B5CF6; }
+
+/* Stats row */
+.stats { display: flex; gap: 1em; margin: 0.6em 0; }
+.stat { text-align: center; flex: 1; }
+.stat-val { font-size: 1em; font-weight: bold; }
+.stat-val.green { color: #00ff88; }
+.stat-val.amber { color: #F59E0B; }
+.stat-val.red { color: #ef4444; }
+.stat-label { font-size: 0.65em; color: #444; text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* Frontier */
+.frontier { background: #080808; border: 1px solid #F59E0B33; border-left: 3px solid #F59E0B; border-radius: 3px; padding: 0.8em 1em; margin: 0.8em 0; font-size: 0.75em; }
+.frontier-title { color: #F59E0B; font-weight: bold; margin-bottom: 0.4em; }
+.frontier-body { color: #666; line-height: 1.5; margin-bottom: 0.5em; }
+.hypothesis { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 3px; padding: 0.6em 0.8em; margin-top: 0.4em; }
+.hyp-label { color: #444; font-size: 0.7em; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.3em; }
+.hyp-row { display: flex; gap: 0.5em; align-items: center; margin: 0.15em 0; font-size: 0.8em; }
+.hyp-agent { color: #555; width: 20px; }
+.action-chip { background: #111; border: 1px solid #222; border-radius: 2px; padding: 0.05em 0.3em; font-size: 0.85em; color: #888; margin-right: 0.2em; }
+.action-chip.shared { border-color: #00ff8840; color: #00ff88; }
+.action-chip.candidate { border-color: #F59E0B60; color: #F59E0B; background: #F59E0B0a; }
+
+/* Focus section */
+.focus { background: #0d0d0d; border: 1px solid #ef444440; border-radius: 6px; padding: 1.5em; margin-bottom: 2em; }
+.focus h3 { color: #ef4444; }
+.search-reduction { display: grid; grid-template-columns: 1fr 1fr; gap: 1em; margin: 1em 0; }
+.sr-box { background: #080808; border: 1px solid #1a1a1a; border-radius: 4px; padding: 1em; text-align: center; }
+.sr-val { font-size: 2em; font-weight: bold; margin-bottom: 0.2em; }
+.sr-label { font-size: 0.72em; color: #555; }
+
+/* Legend */
+.legend { display: flex; gap: 1.5em; font-size: 0.72em; color: #555; margin-bottom: 1em; }
+.legend-item { display: flex; align-items: center; gap: 0.4em; }
+
+footer { margin-top: 3em; padding-top: 1em; border-top: 1px solid #111; font-size: 0.7em; color: #333; }
+</style>
+</head>
+<body>
+
+<h1>Polarity Engine</h1>
+<h2>Agent disagreement as a direction vector into unexplored search space</h2>
+
+<div class="thesis">
+  <strong>The insight:</strong> Two agents solving the same problem produce two compositions on S³.
+  Their agreement zones are <span class="key">confirmed constraints</span> — the solution must pass through here.
+  Their disagreement zones are <span class="key">direction vectors</span> — the gap quaternion points at unexplored space.
+  <br><br>
+  <strong>W-channel divergence</strong> (■ amber): one agent believes an action <em>exists</em> in the solution, the other doesn't.
+  Different world models at that point.
+  <strong>RGB-channel divergence</strong> (■ purple): same actions, different sequence.
+  Same world model, different planning heuristics.
+  <br><br>
+  A third agent that starts at the frontier — constrained by coherent zones, guided by the gap vector —
+  searches exactly the space neither agent has explored.
+  Not randomly. Algebraically guided.
+</div>
+
+<div class="legend">
+  <div class="legend-item"><span class="zone-agree">█</span> Coherent (agree) — confirmed, eliminates search space</div>
+  <div class="legend-item"><span class="zone-w">▒</span> W-gap (existence) — different beliefs about what actions are needed</div>
+  <div class="legend-item"><span class="zone-rgb">░</span> RGB-gap (sequence) — agree on actions, differ on order</div>
+</div>
+
+<div class="grid">
+
+  <!-- g50t L4 -->
+  <div class="card">
+    <div class="level-title">g50t L4 — SOLVED</div>
+    <div class="level-desc">Recording phase identical. Goal traversal diverges at step 30. Both solutions work. W-channel throughout the gap.</div>
+
+    <div class="zone-map">
+      <div class="zone-map-label">Zone map (15 zones, window=5):</div>
+      <div class="zone-chars">
+        <span class="zone-agree">██████</span><span class="zone-w">▒▒▒▒▒▒▒▒▒</span>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-val green">40%</div><div class="stat-label">Coherent</div></div>
+      <div class="stat"><div class="stat-val amber">60%</div><div class="stat-label">W-gap</div></div>
+      <div class="stat"><div class="stat-val">1</div><div class="stat-label">Frontier</div></div>
+      <div class="stat"><div class="stat-val amber">W</div><div class="stat-label">Channel</div></div>
+    </div>
+
+    <div class="frontier">
+      <div class="frontier-title">◆ Frontier at step 30</div>
+      <div class="frontier-body">
+        After identical recording phases, Marvin goes RIGHT-RIGHT, Newton goes UP-UP.
+        Both reach the goal but via orthogonal traversal. W-channel: they have different
+        models of which direction exists toward the goal at this moment.
+      </div>
+      <div class="hypothesis">
+        <div class="hyp-label">Hypothesis for third agent:</div>
+        <div class="hyp-row"><span class="hyp-agent">A:</span><span class="action-chip shared">DOWN</span><span class="action-chip">RIGHT</span><span class="action-chip">RIGHT</span></div>
+        <div class="hyp-row"><span class="hyp-agent">B:</span><span class="action-chip shared">DOWN</span><span class="action-chip">UP</span><span class="action-chip">UP</span></div>
+        <div class="hyp-row"><span class="hyp-agent">→</span><span class="action-chip shared">DOWN</span><span class="action-chip candidate">RIGHT</span><span class="action-chip candidate">UP</span><span style="color:#555;font-size:0.8em;margin-left:0.5em;">33% confidence</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- tr87 L6 -->
+  <div class="card">
+    <div class="level-title">tr87 L6 — SOLVED (both)</div>
+    <div class="level-desc">alter_rules + tree_translation. Marvin: analytical derivation. Newton: BFS-verified. Same outcome, structurally different paths.</div>
+
+    <div class="zone-map">
+      <div class="zone-map-label">Zone map (7 zones, window=5):</div>
+      <div class="zone-chars">
+        <span class="zone-agree">█</span><span class="zone-w">▒▒▒▒▒▒</span>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-val green">14%</div><div class="stat-label">Coherent</div></div>
+      <div class="stat"><div class="stat-val amber">86%</div><div class="stat-label">W-gap</div></div>
+      <div class="stat"><div class="stat-val">1</div><div class="stat-label">Frontier</div></div>
+      <div class="stat"><div class="stat-val amber">W</div><div class="stat-label">Channel</div></div>
+    </div>
+
+    <div class="frontier">
+      <div class="frontier-title">◆ Frontier at step 5</div>
+      <div class="frontier-body">
+        After sharing the initial rightward setup, Marvin goes UP (rule-first ordering),
+        Newton goes DOWN (BFS-first ordering). High W-channel sigma throughout.
+        The algebra tells you these are genuinely different strategies — not the same
+        strategy sequenced differently.
+      </div>
+      <div class="hypothesis">
+        <div class="hyp-label">Hypothesis for third agent:</div>
+        <div class="hyp-row"><span class="hyp-agent">A:</span><span class="action-chip shared">RIGHT</span><span class="action-chip">UP</span><span class="action-chip">UP</span></div>
+        <div class="hyp-row"><span class="hyp-agent">B:</span><span class="action-chip shared">RIGHT</span><span class="action-chip">DOWN</span><span class="action-chip">DOWN</span></div>
+        <div class="hyp-row"><span class="hyp-agent">→</span><span class="action-chip shared">RIGHT</span><span class="action-chip candidate">UP</span><span class="action-chip candidate">DOWN</span><span style="color:#555;font-size:0.8em;margin-left:0.5em;">33% confidence</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- g50t L5 UNSOLVED -->
+  <div class="card unsolved">
+    <div class="level-title" style="color:#ef4444;">g50t L5 — UNSOLVED ⚠</div>
+    <div class="level-desc">Both agents failed. Polarity of failed attempts: coherent zones = confirmed constraints. Gap zones = where the problem actually lives.</div>
+
+    <div class="zone-map">
+      <div class="zone-map-label">Zone map (16 zones, window=5):</div>
+      <div class="zone-chars">
+        <span class="zone-agree">███</span><span class="zone-w">▒▒▒▒▒▒▒▒▒▒▒▒▒</span>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-val green">19%</div><div class="stat-label">Coherent</div></div>
+      <div class="stat"><div class="stat-val red">81%</div><div class="stat-label">W-gap</div></div>
+      <div class="stat"><div class="stat-val">1</div><div class="stat-label">Frontier</div></div>
+      <div class="stat"><div class="stat-val red">W</div><div class="stat-label">Channel</div></div>
+    </div>
+
+    <div class="frontier" style="border-color:#ef444440;border-left-color:#ef4444;">
+      <div class="frontier-title" style="color:#ef4444;">◆ Frontier at step 15 — both agents diverge here</div>
+      <div class="frontier-body">
+        Both agents agree on the first 15 steps (recording phases + A5).
+        At step 15, Marvin goes RIGHT after ACT, Newton goes DOWN.
+        The solution is in this gap. The 19% coherent zone eliminates
+        it as search space. The third agent starts at step 15.
+      </div>
+      <div class="hypothesis">
+        <div class="hyp-label">Candidate for third agent (67% confidence):</div>
+        <div class="hyp-row"><span class="hyp-agent">A:</span><span class="action-chip shared">RIGHT</span><span class="action-chip shared">ACT</span><span class="action-chip">RIGHT</span></div>
+        <div class="hyp-row"><span class="hyp-agent">B:</span><span class="action-chip shared">RIGHT</span><span class="action-chip shared">ACT</span><span class="action-chip">DOWN</span></div>
+        <div class="hyp-row"><span class="hyp-agent">→</span><span class="action-chip shared">RIGHT</span><span class="action-chip shared">ACT</span><span class="action-chip candidate">DOWN</span><span style="color:#ef4444;font-size:0.75em;margin-left:0.5em;">← what neither tried yet</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Focus: search reduction -->
+<div class="focus">
+  <h3>Search Reduction from Polarity — g50t L5</h3>
+  <p style="font-size:0.8em;color:#666;margin-bottom:1em;">
+    When both agents fail, their failure is not wasted. The coherent zones of two failed attempts
+    are constraints that any correct solution must also satisfy. The polarity engine extracts these
+    and eliminates them from search space — without knowing what the correct solution is.
+  </p>
+  <div class="search-reduction">
+    <div class="sr-box">
+      <div class="sr-val" style="color:#00ff88;">15</div>
+      <div class="sr-label">Steps confirmed by both agents<br>eliminated from search</div>
+    </div>
+    <div class="sr-box">
+      <div class="sr-val" style="color:#ef4444;">64</div>
+      <div class="sr-label">Steps unresolved<br>remaining search space</div>
+    </div>
+    <div class="sr-box">
+      <div class="sr-val" style="color:#F59E0B;">19%</div>
+      <div class="sr-label">Search space eliminated<br>by polarity analysis</div>
+    </div>
+    <div class="sr-box">
+      <div class="sr-val" style="color:#fff;">Step 15</div>
+      <div class="sr-label">Frontier — where the<br>third agent begins</div>
+    </div>
+  </div>
+  <p style="font-size:0.78em;color:#555;">
+    The third agent doesn't search from scratch. It begins at the frontier, constrained by
+    the coherent zones, guided by the gap vector. This is algebraically directed search —
+    not heuristic, not random. The gap quaternion at the frontier is the transform from
+    Marvin's model to Newton's model at that exact point. A third composition that
+    applies that transform produces a hypothesis that neither agent has tested.
+  </p>
+</div>
+
+<!-- What this enables -->
+<div style="background:#0d0d0d;border:1px solid #1a1a1a;border-radius:6px;padding:1.5em;margin-bottom:2em;">
+  <h3 style="color:#8B5CF6;">Connection to Closure Ea</h3>
+  <p style="font-size:0.82em;color:#666;line-height:1.8;">
+    The polarity map is a static snapshot — two completed compositions, compared via gilgamesh.
+    This is the Closure SDK layer.<br><br>
+    Closure Ea enables the dynamic version: a third Enkidu cell whose adapter truth is
+    the gap lattice between Agent A and Agent B. As each agent produces new events,
+    the gap evolves. The third cell's closure condition is: reduce the gap sigma to zero.
+    It lives through the disagreement, learns what resolves it, and emits the synthesis
+    upward when the gap closes.<br><br>
+    The polarity engine is Step 6 in the universal staircase:
+    <em>"Mixed world signals — action + state + consequence streams."</em>
+    Two streams whose closure structures have been mapped. The disagreement IS the adapter
+    truth for the synthesis cell. One lattice describing another.
+  </p>
+</div>
+
+<footer>
+  Polarity Engine · Marvin Benchmark × Closure-SDK · March 27, 2026
+  <br>MetaSPN × Walter Henrique Alves da Silva
+</footer>
+
+</body>
+</html>
