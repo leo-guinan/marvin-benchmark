@@ -1,0 +1,13 @@
+[project]
+name = "marvin-benchmark"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = ["closure-sdk", "litellm", "openai", "anthropic"]
+
+[build-system]
+requires = ["setuptools>=42"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["marvin_benchmark*"]
