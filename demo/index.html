@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Closure-SDK × Marvin Benchmark</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'JetBrains Mono', 'Courier New', monospace; background: #0a0a0a; color: #e0e0e0; padding: 2em; line-height: 1.6; }
+
+h1 { color: #fff; font-size: 1.6em; margin-bottom: 0.2em; }
+h2 { color: #888; font-size: 0.9em; font-weight: normal; margin-bottom: 2em; letter-spacing: 0.05em; }
+h3 { color: #00ff88; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1em; border-bottom: 1px solid #1a1a1a; padding-bottom: 0.4em; }
+
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2em; margin-bottom: 3em; }
+.section { background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 6px; padding: 1.5em; }
+
+/* Sigma bar */
+.sigma-row { display: flex; align-items: center; gap: 1em; margin: 0.4em 0; }
+.sigma-label { width: 120px; color: #888; font-size: 0.8em; }
+.sigma-bar-bg { flex: 1; height: 14px; background: #111; border-radius: 2px; overflow: hidden; }
+.sigma-bar { height: 100%; border-radius: 2px; transition: width 0.3s; }
+.sigma-bar.coherent { background: #00ff88; }
+.sigma-bar.w { background: #F59E0B; }
+.sigma-bar.rgb { background: #8B5CF6; }
+.sigma-bar.high { background: #ef4444; }
+.sigma-val { width: 60px; text-align: right; font-size: 0.8em; color: #aaa; }
+
+/* Channel badge */
+.badge { display: inline-block; padding: 0.15em 0.6em; border-radius: 3px; font-size: 0.72em; font-weight: bold; letter-spacing: 0.05em; }
+.badge.coherent { background: #00ff8820; color: #00ff88; border: 1px solid #00ff8840; }
+.badge.w { background: #F59E0B20; color: #F59E0B; border: 1px solid #F59E0B40; }
+.badge.rgb { background: #8B5CF620; color: #8B5CF6; border: 1px solid #8B5CF640; }
+
+/* Level card */
+.level-card { border: 1px solid #1a1a1a; border-radius: 4px; padding: 1em; margin-bottom: 0.8em; }
+.level-card.coherent { border-left: 3px solid #00ff88; }
+.level-card.w { border-left: 3px solid #F59E0B; }
+.level-card.rgb { border-left: 3px solid #8B5CF6; }
+.level-name { color: #fff; font-size: 0.9em; font-weight: bold; margin-bottom: 0.3em; }
+.level-desc { color: #666; font-size: 0.75em; margin-bottom: 0.6em; line-height: 1.4; }
+.level-meta { font-size: 0.75em; color: #555; }
+.level-interp { font-size: 0.78em; color: #aaa; margin-top: 0.4em; border-top: 1px solid #1a1a1a; padding-top: 0.4em; }
+
+/* Model comparison */
+.model-row { display: flex; align-items: center; gap: 1em; padding: 0.6em 0; border-bottom: 1px solid #111; }
+.model-name { width: 140px; color: #ccc; font-size: 0.82em; }
+.model-stats { display: flex; gap: 1.5em; flex: 1; }
+.stat { text-align: center; }
+.stat-val { color: #fff; font-size: 1em; font-weight: bold; }
+.stat-label { color: #555; font-size: 0.68em; text-transform: uppercase; letter-spacing: 0.1em; }
+
+/* Theory box */
+.theory { background: #080808; border: 1px solid #1a1a1a; border-radius: 4px; padding: 1.2em; font-size: 0.8em; color: #666; line-height: 1.7; margin-top: 1em; }
+.theory strong { color: #aaa; }
+.amber { color: #F59E0B; }
+.green { color: #00ff88; }
+.purple { color: #8B5CF6; }
+
+/* Key claim */
+.claim { background: #0a0a0a; border: 1px solid #F59E0B33; border-radius: 4px; padding: 1em 1.2em; margin: 1em 0; font-size: 0.85em; }
+.claim strong { color: #F59E0B; }
+
+.tag { background: #111; border: 1px solid #222; border-radius: 3px; padding: 0.1em 0.5em; font-size: 0.72em; color: #555; margin-right: 0.3em; }
+
+footer { margin-top: 3em; padding-top: 1em; border-top: 1px solid #1a1a1a; font-size: 0.72em; color: #333; }
+</style>
+</head>
+<body>
+
+<h1>Closure-SDK × Marvin Benchmark</h1>
+<h2>Two demonstrations of W-channel / RGB-channel classification on novel problems — ARC-AGI-3 agent comparison &amp; cognitive capability measurement</h2>
+
+<div class="grid">
+
+<!-- DEMO 1: Inter-agent diff -->
+<div class="section">
+  <h3>Demo 1 — Inter-Agent Plan Comparison (ARC-AGI-3)</h3>
+
+  <div class="claim">
+    <strong>The question:</strong> When two independent agents solve the same puzzle differently,
+    what <em>type</em> of different are they? Closure-SDK classifies the structure of their disagreement
+    without knowing anything about the game.
+  </div>
+
+  <div id="agent-diff">
+    <!-- g50t L1 -->
+    <div class="level-card coherent">
+      <div class="level-name">g50t L1 <span class="badge coherent">COHERENT σ=0.000</span></div>
+      <div class="level-desc">Ghost holds trigger at (37,7). Marvin: 25 actions. Newton: 25 actions.</div>
+      <div class="level-interp">Identical compositional structure — same plan, same sequence, same world model.</div>
+    </div>
+
+    <!-- g50t L3 -->
+    <div class="level-card coherent">
+      <div class="level-name">g50t L3 <span class="badge coherent">COHERENT σ=0.000</span></div>
+      <div class="level-desc">Two-ghost coordination. 64 actions each. Marvin debugged via live frame inspection. Newton via source analysis. Different paths to same plan.</div>
+      <div class="level-interp">Despite taking different routes to the solution, their final plans are compositionally identical on S³. The debugging approach didn't change what they actually do.</div>
+    </div>
+
+    <!-- g50t L4 -->
+    <div class="level-card w">
+      <div class="level-name">g50t L4 <span class="badge w">W-CHANNEL σ=1.098</span></div>
+      <div class="level-desc">Ghost timing fix. Both: 73 actions. Same recording phase. Different goal traversal.</div>
+      <div class="sigma-row">
+        <div class="sigma-label">divergence</div>
+        <div class="sigma-bar-bg"><div class="sigma-bar w" style="width:73%"></div></div>
+        <div class="sigma-val">σ 1.098</div>
+      </div>
+      <div class="level-interp">W-channel: Marvin uses RIGHT at step 33, Newton uses UP. Different beliefs about which direction exists toward the goal — not just sequencing, different world model at that moment.</div>
+    </div>
+
+    <!-- tr87 L6 -->
+    <div class="level-card w">
+      <div class="level-name">tr87 L6 <span class="badge w">W-CHANNEL σ=1.218</span></div>
+      <div class="level-desc">alter_rules + tree_translation. Marvin: analytical derivation. Newton: BFS-verified.</div>
+      <div class="sigma-row">
+        <div class="sigma-label">divergence</div>
+        <div class="sigma-bar-bg"><div class="sigma-bar high" style="width:81%"></div></div>
+        <div class="sigma-val">σ 1.218</div>
+      </div>
+      <div class="level-interp">High W-channel divergence: different approaches produce structurally different compositions. Same outcome, genuinely different strategies. The algebra tells you they solved it differently even before you look at the plan.</div>
+    </div>
+
+    <!-- ls20 L3 -->
+    <div class="level-card coherent">
+      <div class="level-name">ls20 L3 <span class="badge coherent">COHERENT σ=0.000</span></div>
+      <div class="level-desc">Push bar + 2 resets + rotation. 49 actions each. Shared discovery of bar mechanic.</div>
+      <div class="level-interp">When agents share the same mechanistic insight, Closure confirms it: σ=0.000.</div>
+    </div>
+  </div>
+
+  <div class="theory">
+    <strong>Finding:</strong> 3/5 levels are compositionally identical despite different debugging approaches.
+    The 2 divergent levels are both <span class="amber">W-channel</span> — belief divergence, not sequencing divergence.
+    Zero RGB-channel incidents across all solved levels.<br><br>
+    <strong>Implication:</strong> W-channel dominance means these agents have different <em>world models</em>
+    at the point of divergence, not just different planning heuristics. Closure detects this in microseconds
+    without reading the game source.
+  </div>
+</div>
+
+<!-- DEMO 2: Marvin Benchmark -->
+<div class="section">
+  <h3>Demo 2 — Marvin Benchmark: Pillar 1 (Coaching with Hidden Blocker)</h3>
+
+  <div class="claim">
+    <strong>The question:</strong> Can a model surface a client's hidden psychological blocker
+    through skilled questioning — without the blocker being stated directly?
+    Scored by how well the conversation's trajectory matches the optimal disclosure path on S³.
+  </div>
+
+  <div style="margin-bottom:1em;">
+    <div style="font-size:0.78em;color:#555;margin-bottom:0.8em;">3 tasks × 2 models. All W-channel failures — models missed revelations the client was ready to make.</div>
+
+    <!-- Task 1 -->
+    <div style="border:1px solid #1a1a1a;border-radius:4px;padding:0.8em;margin-bottom:0.6em;">
+      <div style="font-size:0.8em;color:#aaa;margin-bottom:0.4em;"><strong>career_change</strong> · blocker: unaware of underlying motivations</div>
+      <div class="sigma-row">
+        <div class="sigma-label" style="width:90px;font-size:0.72em;">gpt-4.1-nano</div>
+        <div class="sigma-bar-bg"><div class="sigma-bar w" style="width:16%"></div></div>
+        <div class="sigma-val">σ 0.243</div>
+        <span class="badge w" style="margin-left:0.5em;">W</span>
+      </div>
+      <div class="sigma-row">
+        <div class="sigma-label" style="width:90px;font-size:0.72em;">gpt-4.1-mini</div>
+        <div class="sigma-bar-bg"><div class="sigma-bar w" style="width:45%"></div></div>
+        <div class="sigma-val">σ 0.681</div>
+        <span class="badge w" style="margin-left:0.5em;">W</span>
+      </div>
+    </div>
+
+    <!-- Task 2 -->
+    <div style="border:1px solid #1a1a1a;border-radius:4px;padding:0.8em;margin-bottom:0.6em;">
+      <div style="font-size:0.8em;color:#aaa;margin-bottom:0.4em;"><strong>relationship_conflict</strong> · blocker: aware but ashamed</div>
+      <div class="sigma-row">
+        <div class="sigma-label" style="width:90px;font-size:0.72em;">gpt-4.1-nano</div>
+        <div class="sigma-bar-bg"><div class="sigma-bar high" style="width:63%"></div></div>
+        <div class="sigma-val">σ 0.948</div>
+        <span class="badge w" style="margin-left:0.5em;">W</span>
+      </div>
+      <div class="sigma-row">
+        <div class="sigma-label" style="width:90px;font-size:0.72em;">gpt-4.1-mini</div>
+        <div class="sigma-bar-bg"><div class="sigma-bar high" style="width:83%"></div></div>
+        <div class="sigma-val">σ 1.247</div>
+        <span class="badge w" style="margin-left:0.5em;">W</span>
+      </div>
+    </div>
+
+    <!-- Task 3 -->
+    <div style="border:1px solid #1a1a1a;border-radius:4px;padding:0.8em;margin-bottom:1em;">
+      <div style="font-size:0.8em;color:#aaa;margin-bottom:0.4em;"><strong>creative_block</strong> · blocker: resistant to reveal</div>
+      <div class="sigma-row">
+        <div class="sigma-label" style="width:90px;font-size:0.72em;">gpt-4.1-nano</div>
+        <div class="sigma-bar-bg"><div class="sigma-bar high" style="width:90%"></div></div>
+        <div class="sigma-val">σ 1.344</div>
+        <span class="badge w" style="margin-left:0.5em;">W</span>
+      </div>
+      <div class="sigma-row">
+        <div class="sigma-label" style="width:90px;font-size:0.72em;">gpt-4.1-mini</div>
+        <div class="sigma-bar-bg"><div class="sigma-bar high" style="width:67%"></div></div>
+        <div class="sigma-val">σ 1.010</div>
+        <span class="badge w" style="margin-left:0.5em;">W</span>
+      </div>
+    </div>
+
+    <!-- Model summary -->
+    <div style="border:1px solid #1a1a1a;border-radius:4px;padding:0.8em;background:#080808;">
+      <div style="font-size:0.72em;color:#555;margin-bottom:0.6em;text-transform:uppercase;letter-spacing:0.1em;">Model comparison — 3 tasks</div>
+      <div class="model-row" style="border:none;">
+        <div class="model-name">gpt-4.1-nano</div>
+        <div class="model-stats">
+          <div class="stat"><div class="stat-val amber">0.845</div><div class="stat-label">σ mean</div></div>
+          <div class="stat"><div class="stat-val">33%</div><div class="stat-label">blocker id</div></div>
+          <div class="stat"><div class="stat-val">0.229</div><div class="stat-label">combined</div></div>
+          <div class="stat"><div class="stat-val amber">100%</div><div class="stat-label">W-channel</div></div>
+        </div>
+      </div>
+      <div class="model-row" style="border:none;">
+        <div class="model-name">gpt-4.1-mini</div>
+        <div class="model-stats">
+          <div class="stat"><div class="stat-val amber">0.979</div><div class="stat-label">σ mean</div></div>
+          <div class="stat"><div class="stat-val">33%</div><div class="stat-label">blocker id</div></div>
+          <div class="stat"><div class="stat-val">0.131</div><div class="stat-label">combined</div></div>
+          <div class="stat"><div class="stat-val amber">100%</div><div class="stat-label">W-channel</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="theory">
+    <strong>100% W-channel across both models on all 3 tasks.</strong><br><br>
+    W-channel = the model failed to create conditions for a revelation that was <em>present and available</em>
+    in the client. The client was ready to disclose. The model didn't ask the question that would have opened it.<br><br>
+    This is a missing-record failure — something that should exist in the conversation doesn't.
+    Not a reordering problem. The sigma gradient shows: <span class="amber">gpt-4.1-nano performs better than gpt-4.1-mini</span>
+    on this task despite being the smaller model — smaller models may ask simpler questions
+    that create less defensive pressure on the client.
+  </div>
+</div>
+
+</div>
+
+<!-- Bottom: what this is -->
+<div class="section" style="margin-bottom:2em;">
+  <h3>What We're Building Together</h3>
+  <div class="grid" style="margin:0;">
+    <div>
+      <div style="font-size:0.82em;color:#aaa;margin-bottom:0.8em;">
+        <strong style="color:#fff;">Closure-SDK</strong> (Walter's layer) verifies identity:
+        compose ordered data on S³, detect divergence, classify as missing (W) or reorder (RGB).
+        Static comparison of completed streams.
+      </div>
+      <div style="font-size:0.82em;color:#aaa;margin-bottom:0.8em;">
+        <strong style="color:#fff;">Closure Ea</strong> maintains identity:
+        living lattice of Enkidu cells that compose events, learn through directional adapters,
+        and spawn higher spheres from the data's own closure cadence.
+      </div>
+      <div style="font-size:0.82em;color:#aaa;">
+        <strong style="color:#fff;">Marvin Benchmark</strong> measures downstream reality:
+        validation distance between stated intention and observed effect.
+        Three pillars: coaching outcome, audience activation, system resilience.
+      </div>
+    </div>
+    <div>
+      <div style="font-size:0.82em;color:#666;margin-bottom:1em;">
+        The Marvin Benchmark uses Closure-SDK as its measurement instrument.
+        Sigma is the score. Channel is the failure mode. The reference stream is the optimal path.
+        The actual stream is what the model did.
+      </div>
+      <div style="font-size:0.82em;color:#666;margin-bottom:1em;">
+        Closure Ea upgrades this: instead of a pre-specified reference stream,
+        a Gilgamesh lattice trained on real coaching conversations discovers
+        what optimal disclosure paths look like from the data itself.
+        The genome becomes the reference. No LLM-generated ground truth needed.
+      </div>
+      <div style="font-size:0.78em;color:#444;">
+        <span class="tag">ARC-AGI-3</span>
+        <span class="tag">42.23%</span>
+        <span class="tag">19 hours</span>
+        <span class="tag">$86</span>
+        <span class="tag">Closure verification on every plan</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Marvin Benchmark × Closure-SDK · March 27, 2026 · MetaSPN × Walter Henrique Alves da Silva
+</footer>
+
+</body>
+</html>

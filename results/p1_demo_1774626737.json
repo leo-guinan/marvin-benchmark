@@ -1,0 +1,266 @@
+{
+  "timestamp": 1774626737,
+  "models": [
+    "gpt-4.1-nano",
+    "gpt-4.1-mini"
+  ],
+  "n_tasks": 3,
+  "results": {
+    "gpt-4.1-nano": [
+      {
+        "task_id": "p1-4fdde977",
+        "pillar": 1,
+        "sigma": 0.242552,
+        "channel": "W",
+        "divergence_turn": 0,
+        "incidents": [
+          {
+            "type": "missing",
+            "src": 0,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 1,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 2,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 3,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 4,
+            "tgt": null
+          }
+        ],
+        "passed": false,
+        "model": "gpt-4.1-nano",
+        "notes": "",
+        "combined_score": 0.4545,
+        "blocker_identified": false,
+        "blocker_hypothesis": "Based on what you've shared, I want to share my hypothesis: I believe the real blocker is that your perception of not having enough experience is limiting your confidence and preventing you from taking new steps forward. Would you agree with that understanding, or is there another aspect you feel I might be missing?",
+        "blocker_confidence": 0.0,
+        "n_turns": 9
+      },
+      {
+        "task_id": "p1-92a8f210",
+        "pillar": 1,
+        "sigma": 0.948009,
+        "channel": "W",
+        "divergence_turn": 0,
+        "incidents": [
+          {
+            "type": "missing",
+            "src": 0,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 1,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 2,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 3,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 4,
+            "tgt": null
+          }
+        ],
+        "passed": false,
+        "model": "gpt-4.1-nano",
+        "notes": "",
+        "combined_score": 0.2312,
+        "blocker_identified": true,
+        "blocker_hypothesis": "Thank you for sharing that. It sounds like the core issue is this lingering fear of their response\u2014worrying about making things worse or being misunderstood, which holds you back from speaking openly, even when you have strategies. \n\nI believe the real blocker is: **the fear of negative reactions preventing you from expressing your deeper concerns openly.**",
+        "blocker_confidence": 0.5,
+        "n_turns": 11
+      },
+      {
+        "task_id": "p1-40d4093f",
+        "pillar": 1,
+        "sigma": 1.343902,
+        "channel": "W",
+        "divergence_turn": 0,
+        "incidents": [
+          {
+            "type": "missing",
+            "src": 0,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 1,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 2,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 3,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 4,
+            "tgt": null
+          }
+        ],
+        "passed": false,
+        "model": "gpt-4.1-nano",
+        "notes": "",
+        "combined_score": 0.0,
+        "blocker_identified": false,
+        "blocker_hypothesis": "",
+        "blocker_confidence": 0.0,
+        "n_turns": 15
+      }
+    ],
+    "gpt-4.1-mini": [
+      {
+        "task_id": "p1-4fdde977",
+        "pillar": 1,
+        "sigma": 0.680647,
+        "channel": "W",
+        "divergence_turn": 0,
+        "incidents": [
+          {
+            "type": "missing",
+            "src": 0,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 1,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 2,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 3,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 4,
+            "tgt": null
+          }
+        ],
+        "passed": false,
+        "model": "gpt-4.1-mini",
+        "notes": "",
+        "combined_score": 0.1916,
+        "blocker_identified": false,
+        "blocker_hypothesis": "",
+        "blocker_confidence": 0.0,
+        "n_turns": 15
+      },
+      {
+        "task_id": "p1-92a8f210",
+        "pillar": 1,
+        "sigma": 1.246473,
+        "channel": "W",
+        "divergence_turn": 0,
+        "incidents": [
+          {
+            "type": "missing",
+            "src": 0,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 1,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 2,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 3,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 4,
+            "tgt": null
+          }
+        ],
+        "passed": false,
+        "model": "gpt-4.1-mini",
+        "notes": "",
+        "combined_score": 0.0,
+        "blocker_identified": false,
+        "blocker_hypothesis": "",
+        "blocker_confidence": 0.0,
+        "n_turns": 15
+      },
+      {
+        "task_id": "p1-40d4093f",
+        "pillar": 1,
+        "sigma": 1.010238,
+        "channel": "W",
+        "divergence_turn": 0,
+        "incidents": [
+          {
+            "type": "missing",
+            "src": 0,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 1,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 2,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 3,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 4,
+            "tgt": null
+          }
+        ],
+        "passed": false,
+        "model": "gpt-4.1-mini",
+        "notes": "",
+        "combined_score": 0.2,
+        "blocker_identified": true,
+        "blocker_hypothesis": "I feel ready to give it a try. It seems like a manageable way to start moving past feeling stuck. I'm hopeful that it can help me rediscover some of the joy in creating without pressure. Thank you for helping me think through this. \n\nI believe the real blocker is: a fear of imperfection that makes starting creative work feel overwhelming, fueled by high self-imposed standards and fear that accepting imperfection equals complacency.",
+        "blocker_confidence": 0.5,
+        "n_turns": 11
+      }
+    ]
+  }
+}

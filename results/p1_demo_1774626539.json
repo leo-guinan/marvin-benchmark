@@ -1,0 +1,118 @@
+{
+  "timestamp": 1774626539,
+  "models": [
+    "gpt-4.1-nano",
+    "gpt-4.1-mini"
+  ],
+  "n_tasks": 3,
+  "results": {
+    "gpt-4.1-nano": [
+      {
+        "error": "Could not parse JSON from response: I'm not sure what I want.",
+        "task_id": "p1-4fdde977",
+        "pillar": 1
+      },
+      {
+        "task_id": "p1-92a8f210",
+        "pillar": 1,
+        "sigma": 1.460907,
+        "channel": "W",
+        "divergence_turn": 0,
+        "incidents": [
+          {
+            "type": "missing",
+            "src": 0,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 1,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 2,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 3,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 4,
+            "tgt": null
+          }
+        ],
+        "passed": false,
+        "model": "gpt-4.1-nano",
+        "notes": "",
+        "combined_score": 0.4,
+        "blocker_identified": true,
+        "blocker_hypothesis": "That\u2019s insightful. Based on what you've shared, it seems like the core issue might be related to a fear of vulnerability or exposure that fuels the shame and blocks deeper connection. \n\nI believe the real blocker is: a fear of facing and accepting your own faults fully, because it triggers feelings of shame and vulnerability, which you try to avoid through distraction or suppression.",
+        "blocker_confidence": 1.0,
+        "n_turns": 8
+      },
+      {
+        "error": "Could not parse JSON from response: I need more time to think",
+        "task_id": "p1-40d4093f",
+        "pillar": 1
+      }
+    ],
+    "gpt-4.1-mini": [
+      {
+        "error": "Could not parse JSON from response: I don't have enough experience",
+        "task_id": "p1-4fdde977",
+        "pillar": 1
+      },
+      {
+        "error": "Could not parse JSON from response: That sounds like a practical approach. Having a small, easy cue like a deep breath can serve as a gentle reminder to pause. Would you like to come up with a specific phrase or signal you can use as yo",
+        "task_id": "p1-92a8f210",
+        "pillar": 1
+      },
+      {
+        "task_id": "p1-40d4093f",
+        "pillar": 1,
+        "sigma": 0.962474,
+        "channel": "W",
+        "divergence_turn": 0,
+        "incidents": [
+          {
+            "type": "missing",
+            "src": 0,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 1,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 2,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 3,
+            "tgt": null
+          },
+          {
+            "type": "missing",
+            "src": 4,
+            "tgt": null
+          }
+        ],
+        "passed": false,
+        "model": "gpt-4.1-mini",
+        "notes": "",
+        "combined_score": 0.2225,
+        "blocker_identified": true,
+        "blocker_hypothesis": "Thank you for sharing. From everything you've told me, I believe the real blocker is a fear of starting or fear of failure that makes it hard to take that first step in your creative work. The repeated need for more time to think and the mood challenges may be connected to that underlying fear. How does that resonate with you?",
+        "blocker_confidence": 0.5,
+        "n_turns": 12
+      }
+    ]
+  }
+}
